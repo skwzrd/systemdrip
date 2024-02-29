@@ -1,0 +1,24 @@
+{
+    "services": [
+        "nginx",
+        "qbittorrent-nox",
+        "docker",
+        "neo"
+    ],
+    "properties": [
+        "StateChangeTimestamp",
+        "ActiveState",
+        "Result",
+        "MemoryCurrent",
+        "CPUUsageNSec",
+        "TasksCurrent",
+        "ActiveEnterTimestamp",
+        "ActiveExitTimestamp"
+    ],
+    "pid_properties": [
+        "%cpu",
+        "%mem"
+    ],
+    "data_filename": "tmp.txt",
+    "delimiter": ";=;=;"
+}
