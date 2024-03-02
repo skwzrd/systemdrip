@@ -17,11 +17,11 @@ Running `python3 systemdrip.py` will output all the configured service states li
 
 It will also generate a .html file for serving via HTTP.
 
-Here is a cron entry to run this every 10 minutes.
+Here is a cron entry to run this every 5 minutes.
 
-`*/10 * * * * python3 /path/to/systemdrip.py`
+`*/5 * * * * python3 /path/to/systemdrip.py > /path/to/cron.log 2>&1`
 
-Now to serve this data via HTTP, you can run `python3 server.py`.
+Now to serve this data via HTTP, you can run `python3 server.py` (below I include a sample unit file to run this).
 
 ![browser](resources/browser.png)
 
@@ -36,9 +36,39 @@ Configure the file `config.json` with the following,
 - `host`, `port`, and `debug` are all Flask server configs.
 
 
+<details>
+<summary>If you want to run the server as a service, here is a unit file.</summary>
+
+```
+[Unit]
+Description=SystemDrip
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/USERNAME/systemdrip
+Environment="PYTHONPATH=$PYTHONPATH"
+ExecStart=python3 server.py
+User=USERNAME
+Restart=always
+RestartSec=300
+SyslogIdentifier=systemdrip
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Supplementary commands for running the service,
+
+- `sudo cat /etc/systemd/system/systemdrip.service`
+- `sudo systemctl enable systemdrip`
+- `sudo systemctl start systemdrip`
+- `sudo systemctl status systemdrip`
+</details>
+
 ## Dependencies
 
-- The only non-standard libraries can be installed with `pip install pandas flask`.
+- The only non-standard libraries can be installed with `sudo pip install pandas flask`. `sudo` is important to use for the cron job.
 
 
 ## Why

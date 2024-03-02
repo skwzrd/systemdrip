@@ -37,8 +37,11 @@ def index():
             </style>
         </head>
         <body>
-            BODY
+            <h2>SystemDrip</h2>
+            
+            <BODY>
 
+            <p>View source code on <a href="https://github.com/skwzrd/systemdrip">GitHub</a></p>
             <script>
                 setInterval(function() {
                     location.reload();
@@ -48,9 +51,18 @@ def index():
         </html>
     """
 
-    with open('systemdrip.html', 'r') as f:
-        body = f.read()
-    html_content = html_content.replace('BODY', body)
+    output_filename_html = 'systemdrip.html'
+    output_filename_meta = 'meta.json'
+    body = '<p>Metrics uninitialized. Has <code>python3 systemdrip.py</code> ran yet?</p>'
+    if os.path.isfile(output_filename_html) and os.path.isfile(output_filename_meta):
+        with open(output_filename_meta, 'r') as f:
+            d = json.load(f)
+            body = f'<p>Last Updated: {d["last_updated"]}</p>'
+
+        with open(output_filename_html, 'r') as f:
+            body += f.read()
+
+    html_content = html_content.replace('<BODY>', body)
 
     return html_content
 

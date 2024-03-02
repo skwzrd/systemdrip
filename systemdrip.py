@@ -86,4 +86,7 @@ df = df[config['final_column_order']]
 with open('systemdrip.html', 'w') as f:
     f.write(df.to_html())
 
+with open('meta.json', 'w') as f:
+    json.dump({'last_updated': datetime.datetime.now().strftime('%b %d, %Y %H:%M:%S')}, f)
+
 print(df.to_string())
