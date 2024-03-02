@@ -1,49 +1,57 @@
 # SystemDrip
 
-## Running
+This program lets you monitor systemd service states via cli and/or a browser in the **simplest** way possible.
 
-`./sysdtemdrip.sh`
+## Usage
 
-## Output
+Running `python3 systemdrip.py` will output all the configured service states likeso,
 
 ```
-No files found for not_existent.service.
-
-              Name  State (Days) ActiveState   Result  MemoryCurrentMB  CPUUsageSeconds
-0            nginx           0.1      active  success             10.0              0.0
-1  qbittorrent-nox           2.0      active  success             11.1             84.2
-2           docker           3.6      active  success            102.6             48.7
-3              neo           0.0      active  success            161.2             67.2
-4      quart_12345           0.0    inactive  success              0.0            112.0
+              Name Found ActiveState  State (Days)  MemoryCurrentMB  CPUUsageSeconds
+0            nginx   Yes      active           2.3             10.0              0.0
+1  qbittorrent-nox   Yes      active           4.2             12.0            177.5
+2           docker   Yes      active           5.8            101.9             77.5
+3              neo   Yes      active           2.2           1715.8          13791.9
+4     non_existent     -           0           0.0              0.0              0.0
 ```
+
+It will also generate a .html file for serving via HTTP.
+
+Here is a cron entry to run this every 10 minutes.
+
+`*/10 * * * * python3 /path/to/systemdrip.py`
+
+Now to serve this data via HTTP, you can run `python3 server.py`.
+
+![browser](resources/browser.png)
 
 ## Configuration
 
 Configure the file `config.json` with the following,
 
 - `services`: any service you want to monitor.
-- `properties`: any systemd properties you're interested in. View the existing properties and their values for a given service with `sudo systemctl show docker`.
+- `properties`: any systemd properties you're interested in. View existing properties and their values for a given service with `sudo systemctl show <service_name>`.
 - `pid_properties`: supports `%mem` and `%cpu`.
-- `data_filename`: an arbitrary file name. Data is written here for communication between Bash and Python.
-- `delimiter`: an arbitrary string that is highly unique.
+- `final_column_order`: the columns you want the output table to have, in order.
+- `host`, `port`, and `debug` are all Flask server configs.
 
-`sudo chmod +x systemdrip.sh`
 
 ## Dependencies
 
-- Python3
-- Pandas, `pip install pandas`
-- JSON processor, `sudo apt install jq`
+- The only non-standard libraries can be installed with `pip install pandas flask`.
+
 
 ## Why
 
-The following Prometheus exporters didn't support this by default.
+I didn't like any of the traditional monitoring solutions because they made things too complicated. I just wanted something simple to see what state any given service was in, and for how long. Accomplishing this shouldn't require more than 150M of code, or more than 5 minutes of learning. Flask is 728K. Pandas is 62M and might get replaced with some utility functions in the future to remove it as a dependency. The usage section of this document can easily be read in under 5 minutes.
 
-- https://github.com/prometheus-community/systemd_exporter
-- https://github.com/ncabatoff/process-exporter
-- https://github.com/prometheus/node_exporter
-
-
-## Roadmap
-
-- Interface the output from this script to a [text-collector](https://github.com/prometheus/node_exporter?tab=readme-ov-file#textfile-collector).
+|Project|Thoughts|
+|---|---|
+| https://github.com/prometheus/prometheus | Requires a custom exporter to gather systemd metrics, and over 250M. |
+| https://github.com/prometheus-community/systemd_exporter | Doesn't gather all the systemd parameters I wanted and also outputs states as integers. |
+| https://github.com/ncabatoff/process-exporter | Details are too fine grain for service level metrics. |
+| https://github.com/prometheus/node_exporter | Would require a text_collector fed by a custom bash script that gathers systemd service states. |
+| https://github.com/influxdata/telegraf | The binary is over 150M, configuration takes too much time to understand, it requires a plugin, and it does too many things. |
+| https://github.com/grafana/grafana | Too complex, and over 390M. |
+| https://github.com/ratibor78/srvstatus | This parsed the output from `systemctl status`, rather than `systemctl show --property`. |
+| https://github.com/zzndb/srvstatus | Uses the above project. |
