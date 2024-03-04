@@ -3,6 +3,7 @@ import os
 import datetime
 import pandas as pd
 import subprocess
+from persist_metrics import persist_metrics
 
 
 os.chdir(os.path.dirname(__file__))
@@ -88,5 +89,9 @@ with open('systemdrip.html', 'w') as f:
 
 with open('meta.json', 'w') as f:
     json.dump({'last_updated': datetime.datetime.now().strftime('%b %d, %Y %H:%M:%S')}, f)
+
+if bool(config['persist_metrics']) and all([x in df.columns for x in ['ActiveState', 'MemoryCurrentMB', 'CPUUsageSeconds']]):
+    for i, row in df.iterrows():
+        persist_metrics(row['Name'], row['ActiveState'], row['MemoryCurrentMB'], row['CPUUsageSeconds'])
 
 print(df.to_string())
