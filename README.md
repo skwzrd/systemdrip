@@ -29,12 +29,16 @@ Now to serve this data via HTTP, you can run `python3 server.py` (below I includ
 
 Configure the file `config.json` with the following,
 
-- `services`: any service you want to monitor.
+- `services`: any service you want to monitor
 - `properties`: any systemd properties you're interested in. View existing properties and their values for a given service with `sudo systemctl show <service_name>`.
 - `pid_properties`: supports `%mem` and `%cpu`.
 - `final_column_order`: the columns you want the output table to have, in order.
 - `host`, `port`, and `debug` are all Flask server configs.
-
+- `persist_metrics`: save metrics to a SQLite database?
+- `persist_metrics_days`: number of days to keep metrics before deletion.
+- `chartjs`: use chartjs to plot data?
+- `plot_nth_points`: only plot every nth point.
+- `plot_n_days`: only plot n days into the past.
 
 <details>
 <summary>If you want to run the server as a service, here is a unit file.</summary>

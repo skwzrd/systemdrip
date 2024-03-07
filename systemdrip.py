@@ -83,15 +83,27 @@ df.fillna(0, inplace=True)
 df = df[config['final_column_order']]
 
 
+
+
 # Load
 with open('systemdrip.html', 'w') as f:
-    f.write(df.to_html())
+    if 'ActiveState' in df.columns:
+        
+        def highlight_states(states):
+            return ['background-color: #51aa51' if val == 'active' else 'background-color: #c40000' for val in states]
+        
+        f.write(df.style.apply(highlight_states, subset=['ActiveState']).to_html())
+    else:
+        f.write(df.to_html())
+
 
 with open('meta.json', 'w') as f:
     json.dump({'last_updated': datetime.datetime.now().strftime('%b %d, %Y %H:%M:%S')}, f)
 
+
 if bool(config['persist_metrics']) and all([x in df.columns for x in ['ActiveState', 'MemoryCurrentMB', 'CPUUsageSeconds']]):
     for i, row in df.iterrows():
         persist_metrics(row['Name'], row['ActiveState'], row['MemoryCurrentMB'], row['CPUUsageSeconds'])
+
 
 print(df.to_string())

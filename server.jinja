@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% if config['chartjs'] %}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2"></script>
+        <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1"></script>
+    {% endif %}
+
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+    <title>systemdrip</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td
+        {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        canvas {
+            max-height: 40vh;
+            max-width: 95vw;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>SystemDrip</h2>
+
+    {% if systemdrip_table %}
+        <p>Last Updated: {{ d_meta["last_updated"] }} ({{ last_update_mins }} mins ago)</p>
+        {{ systemdrip_table }}
+    {% else %}
+        <p>Metrics uninitialized. Has <code>python3 systemdrip.py</code> ran yet?</p>
+    {% endif %}
+
+
+    {% if memory_data %}
+        <h2>Memory Usage</h2>
+        <canvas id="memoryChart"></canvas>
+    {% endif %}
+
+
+    {% if cpu_data %}
+        <h2>CPU Usage</h2>
+        <canvas id="cpuChart"></canvas>
+    {% endif %}
+
+
+    <p>View source code on <a href="https://github.com/skwzrd/systemdrip">GitHub</a></p>
+
+    <script>
+        setInterval(function () {
+            location.reload();
+        }, 1000 * 60 * 1); // page will reload every 1 minute(s)
+
+        {% if memory_data %}
+            plot_2d('memoryChart', {{ memory_data | tojson }}, 'm');
+        {% endif %}
+
+        {% if cpu_data %}
+            plot_2d('cpuChart', {{ cpu_data | tojson }}, 'c');
+        {% endif %}
+
+        function plot_2d(id, server_data, col) {
+            if (server_data) {
+                var chartCtx = document.getElementById(id).getContext('2d');
+                var chart = new Chart(chartCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: server_data.map(obj => ({
+                            label: obj.l,
+                            data: obj.d.map(entry => ({ x: entry.t, y: entry[col] }))
+                        }))
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute',
+                                },
+                            },
+                            y: {
+                                type: 'logarithmic',
+                            }
+                        },
+                        animation: {
+                            duration: 0
+                        }
+                    },
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
