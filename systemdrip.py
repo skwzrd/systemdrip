@@ -87,14 +87,7 @@ df = df[config['final_column_order']]
 
 # Load
 with open('systemdrip.html', 'w') as f:
-    if 'ActiveState' in df.columns:
-        
-        def highlight_states(states):
-            return ['background-color: #51aa51' if val == 'active' else 'background-color: #c40000' for val in states]
-        
-        f.write(df.style.apply(highlight_states, subset=['ActiveState']).to_html())
-    else:
-        f.write(df.to_html())
+    f.write(df.to_html())
 
 
 with open('meta.json', 'w') as f:
