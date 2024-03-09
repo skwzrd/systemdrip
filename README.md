@@ -39,6 +39,7 @@ Configure the file `config.json` with the following,
 - `chartjs`: use chartjs to plot data?
 - `plot_nth_points`: only plot every nth point.
 - `plot_n_days`: only plot n days into the past.
+- `plot_n_points_per_service`: limit the number of plot points to n points per service.
 
 <details>
 <summary>If you want to run the server as a service, here is a unit file.</summary>

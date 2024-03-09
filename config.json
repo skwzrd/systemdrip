@@ -4,8 +4,8 @@
         "qbittorrent-nox",
         "docker",
         "neo",
-        "non_existent",
         "smbd",
+        "mysql",
         "sshd",
         "snap.nextcloud.php-fpm",
         "snap.nextcloud.apache",
@@ -39,6 +39,7 @@
     "persist_metrics": true,
     "persist_metrics_days": 60,
     "chartjs": true,
-    "plot_nth_points": 5,
-    "plot_n_days": 1
+    "plot_nth_points": 2,
+    "plot_n_days": 2,
+    "plot_n_points_per_service": 50
 }

@@ -71,7 +71,7 @@ for service in config['services']:
 # Transform
 df = pd.DataFrame(entries)
 
-StateChangeTimestamp = pd.to_datetime(df['StateChangeTimestamp'], format="%a %Y-%m-%d %H:%M:%S %Z")
+StateChangeTimestamp = pd.to_datetime(df['StateChangeTimestamp'], format="%a %Y-%m-%d %H:%M:%S %Z", errors='coerce')
 Now = datetime.datetime.now(tz=datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo)
 
 df['StateChangeTimestampDeltaSeconds'] = (Now - StateChangeTimestamp).dt.total_seconds()
@@ -81,7 +81,6 @@ df['CPUUsageSeconds'] = round(pd.to_numeric(df['CPUUsageNSec'], errors='coerce')
 df.fillna(0, inplace=True)
 
 df = df[config['final_column_order']]
-
 
 
 
