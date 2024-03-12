@@ -71,11 +71,19 @@ for service in config['services']:
 # Transform
 df = pd.DataFrame(entries)
 
-StateChangeTimestamp = pd.to_datetime(df['StateChangeTimestamp'], format="%a %Y-%m-%d %H:%M:%S %Z", errors='coerce')
-Now = datetime.datetime.now(tz=datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo)
+state_days = []
+for t in df['StateChangeTimestamp']:
+    try:
+        now = datetime.datetime.now()
+        t = datetime.datetime.strptime(t, "%a %Y-%m-%d %H:%M:%S %Z")
+        t = round((now - t).total_seconds() / 3600 / 24, 1)
+    except Exception as e:
+        t = f'broken: {t}'
+        pass
+    
+    state_days.append(t)
 
-df['StateChangeTimestampDeltaSeconds'] = (Now - StateChangeTimestamp).dt.total_seconds()
-df['State (Days)']    = round(df["StateChangeTimestampDeltaSeconds"] / 3600 / 24, 1)
+df['State (Days)']    = state_days
 df['MemoryCurrentMB'] = round(pd.to_numeric(df['MemoryCurrent'], errors='coerce') / 1024 / 1024, 1)
 df['CPUUsageSeconds'] = round(pd.to_numeric(df['CPUUsageNSec'], errors='coerce') / 1e9, 1)
 df.fillna(0, inplace=True)
