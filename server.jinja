@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% if config['chartjs'] %}
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2"></script>
-        <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1"></script>
     {% endif %}
 
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
@@ -17,26 +17,32 @@
         body {
             font-family: Arial, sans-serif;
         }
+
         table {
             border-collapse: collapse;
         }
-        th, td
-        {
+
+        th,
+        td {
             border: 1px solid #dddddd;
             text-align: left;
             padding: 8px;
         }
+
         th {
             background-color: #f2f2f2;
         }
+
         .container {
             display: flex;
             flex-wrap: wrap;
         }
+
         canvas {
             width: 44vw;
             max-height: 500px;
         }
+
         .container canvas {
             margin: 5px;
         }
@@ -54,26 +60,26 @@
     <h2>SystemDrip</h2>
 
     {% if systemdrip_table %}
-        <p>Last Updated: {{ d_meta["last_updated"] }} ({{ last_update_mins }} mins ago)</p>
-        {{ systemdrip_table }}
+    <p>Last Updated: {{ d_meta["last_updated"] }} ({{ last_update_mins }} mins ago)</p>
+    {{ systemdrip_table }}
     {% else %}
-        <p>Metrics uninitialized. Has <code>python3 systemdrip.py</code> ran yet?</p>
+    <p>Metrics uninitialized. Has <code>python3 systemdrip.py</code> ran yet?</p>
     {% endif %}
 
     <div class="container">
         {% if memory_data %}
-            <div class="item">
-                <h2>Memory Usage</h2>
-                <canvas id="memoryChart"></canvas>
-            </div>
+        <div class="item">
+            <h2>Memory Usage</h2>
+            <canvas id="memoryChart"></canvas>
+        </div>
         {% endif %}
 
 
         {% if cpu_data %}
-            <div class="item">
-                <h2>CPU Usage</h2>
-                <canvas id="cpuChart"></canvas>
-            </div>
+        <div class="item">
+            <h2>CPU Usage</h2>
+            <canvas id="cpuChart"></canvas>
+        </div>
         {% endif %}
     </div>
 
@@ -85,11 +91,11 @@
         }, 1000 * 60 * 1); // page will reload every 1 minute(s)
 
         {% if memory_data %}
-            plot_2d('memoryChart', {{ memory_data | tojson }}, 'm');
+        plot_2d('memoryChart', {{ memory_data | tojson }}, 'm');
         {% endif %}
 
         {% if cpu_data %}
-            plot_2d('cpuChart', {{ cpu_data | tojson }}, 'c');
+        plot_2d('cpuChart', {{ cpu_data | tojson }}, 'c');
         {% endif %}
 
         function plot_2d(id, server_data, col) {
@@ -108,7 +114,11 @@
                             x: {
                                 type: 'time',
                                 time: {
-                                    unit: 'minute',
+                                    unit: 'day',
+                                    unitStepSize: 1,
+                                    displayFormats: {
+                                        'day': 'MMM DD'
+                                    }
                                 },
                             },
                             y: {
